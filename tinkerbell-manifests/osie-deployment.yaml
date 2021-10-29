@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: osie-work
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      tinkerbell/component: osie-work
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        tinkerbell/component: osie-work
+    spec:
+      containers:
+        - args:
+          - "https://github.com/tinkerbell/hook/releases/download/5.10.57/hook_x86_64.tar.gz"
+          - /source
+          - /source
+          - /destination
+          - "true"
+          command:
+            - /scripts/lastmile.sh
+          image: bash:4.4
+          name: osie-work
+          resources: {}
+          volumeMounts:
+            - mountPath: /scripts
+              name: osie
+            - mountPath: /source
+              name: osie-source
+            - mountPath: /destination
+              name: osie-destination
+      restartPolicy: Always
+      volumes:
+        - name: osie
+          hostPath:
+            path: /abhnvp/sandbox/deploy/compose/osie
+        - name: osie-source
+          hostPath:
+            path: /abhnvp/sandbox/deploy/compose/state/webroot/misc/osie/current
+        - name: osie-destination
+          hostPath:
+            path: /abhnvp/sandbox/deploy/compose/state/webroot/workflow
+status: {}

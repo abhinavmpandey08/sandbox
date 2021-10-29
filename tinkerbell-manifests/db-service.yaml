@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-service
+  labels:
+    tinkerbell/component: db
+spec:
+  selector:
+    tinkerbell/component: db
+  ports:
+  - name: pg-port
+    port: 5432
+    protocol: TCP
+    targetPort: 5432
+  type: ClusterIP

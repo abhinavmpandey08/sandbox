@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    tinkerbell/component: osie-bootloader
+  name: osie-bootloader
+spec:
+  ports:
+    - name: "8080"
+      port: 8080
+      targetPort: 80
+  selector:
+    tinkerbell/component: osie-bootloader
+  type: LoadBalancer
+  loadBalancerIP: 194.17.0.15

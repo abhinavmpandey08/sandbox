@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: boots
+  labels:
+    tinkerbell/component: boots
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      tinkerbell/component: boots
+  template:
+    metadata:
+      labels:
+        tinkerbell/component: boots
+    spec:
+      containers:
+      - args:
+        - -dhcp-addr
+        - 0.0.0.0:67
+        - -tftp-addr
+        - :69
+        - -http-addr
+        - 0.0.0.0:80
+        - -log-level
+        - DEBUG
+        env:
+        - name: API_AUTH_TOKEN
+          value: ignored
+        - name: API_CONSUMER_TOKEN
+          value: ignored
+        - name: BOOTP_BIND
+          value: 194.17.0.16:67
+        - name: DATA_MODEL_VERSION
+          value: "1"
+        - name: DNS_SERVERS
+          value: 8.8.8.8
+        - name: DOCKER_REGISTRY
+          value: 127.0.0.1
+        - name: FACILITY_CODE
+          value: onprem
+        - name: HTTP_BIND
+          value: 194.17.10.63:80
+        - name: MIRROR_HOST
+          value: 194.17.0.15:8080
+        - name: PACKET_ENV
+          value: testing
+        - name: PACKET_VERSION
+          value: ignored
+        - name: PUBLIC_IP
+          value: 194.17.10.63
+        - name: REGISTRY_PASSWORD
+          value: Admin1234
+        - name: REGISTRY_USERNAME
+          value: admin
+        - name: ROLLBAR_DISABLE
+          value: "1"
+        - name: ROLLBAR_TOKEN
+          value: ignored
+        - name: SYSLOG_BIND
+          value: 127.0.0.1:514
+        - name: TFTP_BIND
+          value: 194.17.10.63:69
+        - name: TINKERBELL_CERT_URL
+          value: http://194.17.0.15:42114/cert
+        - name: TINKERBELL_GRPC_AUTHORITY
+          value: 194.17.0.15:42113
+        image: public.ecr.aws/h6q6q4n4/boots:logs12
+        imagePullPolicy: IfNotPresent
+        name: boots

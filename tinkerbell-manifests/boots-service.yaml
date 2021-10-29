@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: boots-service-tcp
+spec:
+  loadBalancerIP: 194.17.0.15
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  - name: dhcp
+    port: 67
+    targetPort: 67
+    protocol: UDP
+  - name: tftp
+    port: 69
+    targetPort: 69
+    protocol: UDP
+  selector:
+    tinkerbell/component: boots
+  type: LoadBalancer
