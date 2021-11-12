@@ -1,65 +1,81 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    tinkerbell/component: tink-server
+    app: tink-server
+  name: tink-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      tinkerbell/component: tink-server
+      app: tink-server
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        tinkerbell.app: tink-server
+        app: tink-server
     spec:
       containers:
-      - env:
-        - name: FACILITY
-          value: onprem
-        - name: PACKET_ENV
-          value: testing
-        - name: PACKET_VERSION
-          value: ignored
-        - name: PGDATABASE
-          value: tinkerbell
-        - name: PGHOST
-          value: db-service.default.svc.cluster.local
-        - name: PGPASSWORD
-          value: tinkerbell
-        - name: PGPORT
-          value: "5432"
-        - name: PGSSLMODE
-          value: disable
-        - name: PGUSER
-          value: tinkerbell
-        - name: ROLLBAR_DISABLE
-          value: "-1"
-        - name: ROLLBAR_TOKEN
-          value: ignored
-        - name: TINKERBELL_GRPC_AUTHORITY
-          value: :42113
-        - name: TINKERBELL_HTTP_AUTHORITY
-          value: :42114
-        - name: TINK_AUTH_PASSWORD
-          value: admin
-        - name: TINK_AUTH_USERNAME
-          value: admin
+      - args:
+          - -log-level
+          - DEBUG
+        env:
+          - name: PGDATABASE
+            value: tinkerbell
+          - name: PGHOST
+            value: db-service.default.svc.cluster.local
+          - name: PGPASSWORD
+            value: tinkerbell
+          - name: PGPORT
+            value: "5432"
+          - name: PGSSLMODE
+            value: disable
+          - name: PGUSER
+            value: tinkerbell
+          - name: FACILITY
+            value: onprem
+          - name: PACKET_ENV
+            value: testing
+          - name: PACKET_VERSION
+            value: ignored
+          - name: ROLLBAR_DISABLE
+            value: "-1"
+          - name: ROLLBAR_TOKEN
+            value: ignored
+          - name: TINK_AUTH_PASSWORD
+            value: admin
+          - name: TINK_AUTH_USERNAME
+            value: admin
+          - name: TINKERBELL_GRPC_AUTHORITY
+            value: :42113
+          - name: TINKERBELL_HTTP_AUTHORITY
+            value: :42114
         image: public.ecr.aws/h6q6q4n4/tink:sha-8ea8a0e5
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /cert
+            port: 42114
         name: tink-server
         ports:
-        - containerPort: 42113
-          protocol: TCP
-        - containerPort: 42114
-          protocol: TCP
-        resources: {}
+          - containerPort: 42113
+            hostPort: 42113
+            name: grpc
+          - containerPort: 42114
+            hostPort: 42114
+            name: http
+        readinessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /cert
+            port: 42114
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
-        - mountPath: /certs/onprem
+        - mountPath: /certs
           name: certs
       dnsPolicy: ClusterFirst
       restartPolicy: Always

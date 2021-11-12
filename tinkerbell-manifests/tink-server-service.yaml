@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: tink-server
   labels:
-    tinkerbell/component: tink-server
+    app: tink-server
 spec:
   ports:
     - name: "42113"
@@ -13,6 +13,6 @@ spec:
       port: 42114
       targetPort: 42114
   selector:
-    tinkerbell/component: tink-server
+    app: tink-server
   type: LoadBalancer
   loadBalancerIP: 194.17.0.15
